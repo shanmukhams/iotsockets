@@ -3,21 +3,29 @@ var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
+    res.sendFile(__dirname + '/ui/index.html');
 });
-
+let counter = '0';
+FPS = 10
 io.on('connect', (socket) => {
     console.log('a user connected')
-    socket.send('Hello from server')
-    socket.emit('greetings', 'Hello from server event');
-      
-    socket.on('message', (data) => {
-        console.log(data);
-    });
 
-    socket.on('salutations', (data)=>{
-        console.log(data)
+    setInterval(() => {
+        socket.emit('sendimage', counter);
+      }, 1000/FPS);
+
+    var image;
+    socket.on('image', (data)=>{
+        console.log(data.substring(0,8))
+        counter = data;        
     })
+
+    socket.on('frompy', (data)=>{
+        console.log(data.substring(0,8))
+               
+    })
+    
+    
 })
 
 http.listen(3000, () => {
